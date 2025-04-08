@@ -7,3 +7,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//get, post, put, delete
+Route::get('/patients', function () {
+    echo "Hola desde la rutas de tipo web";
+});
