@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         //User::factory(15)->create(); //insert....
         //crear pacientes
         Patient::factory(10)->create();
+        //patients
         //citas
         // User::factory()->create([
         //     'name' => 'Test User',
