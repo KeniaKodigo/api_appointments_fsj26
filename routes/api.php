@@ -12,3 +12,6 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/v1/patients', [PatientController::class, 'index']);
 Route::post('/v1/patients', [PatientController::class, 'store']);
+//ruta que solicita un parametro
+Route::get('/v1/patients/{patient_id}', [PatientController::class, 'findById']);
+Route::patch('/v1/patients/{patient_id}', [PatientController::class, 'update']);
