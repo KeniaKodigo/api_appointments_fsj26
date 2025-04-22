@@ -49,7 +49,7 @@ class PatientController extends Controller
         //     'birthday' => 'required|date_format:Y-m-d',
         //     'age' => 'required|integer|min:0|max:120'
         // ]);
-
+        //php artisan make:request 
         // if($validators->fails()) {
         //     return $validators->errors(); //errores personalizados
         // }
