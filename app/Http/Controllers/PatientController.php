@@ -7,11 +7,30 @@ use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+/**
+ * @OA\Tag(name="Patients", description="API for managing patients")
+ */
 class PatientController extends Controller
 {
     //query builder (manual) / ORM (metodos mapeados)(automatica)
     //metodo donde vamos obtener todos los pacientes (ruta)
+    /**
+     * @OA\Get(
+     *     path="/api/v1/patients",
+     *     summary="Get all patients",
+     *     description="Returns a list of all registered patients",
+     *     tags={"Patients"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of patients successfully obtained"
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="No patients registered"
+     *     )
+     * )
+     */
     public function index(){
         //consulta ORM (all()) => select * from patients
         $patients = Patient::all(); //[]
@@ -41,7 +60,34 @@ class PatientController extends Controller
     }
 
     //metodo de guardar un paciente (envio)
-    //Request
+    /**
+     * @OA\Post(
+     *     path="/api/v1/patients",
+     *     summary="Register a new patient",
+     *     description="Registers a patient in the database",
+     *     tags={"Patients"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "birthdate", "gender", "address", "phone"},
+     *             @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *             @OA\Property(property="birthdate", type="string", format="date", example="2000-01-01"),
+     *             @OA\Property(property="gender", type="string", enum={"Masculino", "Femenino"}, example="Masculino"),
+     *             @OA\Property(property="address", type="string", example="Calle Falsa 123"),
+     *             @OA\Property(property="phone", type="string", example="12345678"),
+     *             @OA\Property(property="email", type="string", example="juan.perez@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Successfly created"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function store(StorePatientRequest $request){
         //formar las reglas
         // $validators = Validator::make($request->all(), [
@@ -66,6 +112,30 @@ class PatientController extends Controller
     }
 
     //metodo para obtener un paciente
+    /**
+     * @OA\Get(
+     *     path="/api/v1/patients/{patient_id}",
+     *     summary="Obtain a patient by ID",
+     *     description="Obtains the information of a specific patient by patient ID",
+     *     tags={"Patients"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="patient_id",
+     *         in="path",
+     *         description="Patient ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Patient successfully found"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Patient not found"
+     *     )
+     * )
+     */
     public function findById($id){
         $validator = Validator::make(['patient_id' => $id],[
             'patient_id' => 'required|integer|exists:patients,id'
@@ -82,6 +152,39 @@ class PatientController extends Controller
     }
 
     //metodo para actualizar un paciente (name,address,phone,email)
+    /**
+     * @OA\Patch(
+     *     path="/api/v1/patients/{patient_id}",
+     *     summary="Update patient information",
+     *     description="Update existing patient data",
+     *     tags={"Patients"},
+     *     @OA\Parameter(
+     *         name="patient_id",
+     *         in="path",
+     *         description="Patient ID to be updated",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "address", "phone"},
+     *             @OA\Property(property="name", type="string", example="Juan Pérez Actualizado"),
+     *             @OA\Property(property="address", type="string", example="Avenida Siempre Viva"),
+     *             @OA\Property(property="phone", type="string", example="87654321"),
+     *             @OA\Property(property="email", type="string", example="juan.actualizado@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfly updated"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error"
+     *     )
+     * )
+     */
     public function update(UpdatePatientRequest $request, $id){
         $patient = Patient::find($id); //encontramos al paciente
 
