@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 class AppointmentController extends Controller
 {
     //metodo donde vamos a obtener consultas y el nombre del paciente
+    //anotacion swagger
     public function index(){
         //select * from appointments join patients on appointments.patient_id = patients.id
         $appointments = Appointment::join('patients','appointments.patient_id', '=', 'patients.id')->select('appointments.*','patients.name as patient')->get();
@@ -40,6 +41,24 @@ class AppointmentController extends Controller
         }
 
         $data = $query_appointments->get();
+        return response()->json($data, 200); //[]
+    }
+
+    //metodo para obtener pacientes por doctor en base al inicio de sesion
+    public function getPatientByDoctor(Request $request){
+        $user = $request->user(); //obteniendo el usuario logueado
+
+        //validando si el usuario no es un doctor
+        if($user->role_id == 2){
+            return response()->json([
+                'message' => 'Access denied, only doctors can view this information',
+            ], 403);
+        }
+
+        $data = Appointment::join('patients','appointments.patient_id', 'patients.id')->join('users','appointments.user_id', 'users.id')->where('appointments.user_id', $user->id)
+            ->select('appointments.*','patients.name as patient','users.name as doctor')
+            ->get();
+
         return response()->json($data, 200); //[]
     }
 }
